@@ -6,7 +6,7 @@ import { getProviders, signIn } from "next-auth/react"
 import type { InferGetServerSidePropsType, GetServerSidePropsContext } from 'next';
 import { useState } from 'react';
 
-export default function SignIn({ providers }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+export default function SignIn() {
   const [email, updateEmail] = useState('');
   const router = useRouter();
 
@@ -18,7 +18,7 @@ return (
           className="mx-auto h-10 w-auto cursor-pointer"
           src="https://tailwindui.com/img/logos/mark.svg?color=indigo&shade=500"
           alt="Your Company"
-          onClick={() => router.push('/')}
+          onClick={() => void router.push('/')}
         />
         <h2 className="mt-6 text-center text-2xl font-bold leading-9 tracking-tight text-gray-300">
           Sign in / Sign up
@@ -51,7 +51,7 @@ return (
               <button
                 type="submit"
                 className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                onClick={ () => signIn('email', { email, callbackUrl: "/dashboard" }) }
+                onClick={ () => { void signIn('email', { email, callbackUrl: "/dashboard" }); }}
               >
                 Sign in
               </button>
@@ -76,8 +76,9 @@ return (
             <div>
               <div className="mt-6 grid grid-cols-2 gap-4">
                 <button
-                  onClick={() =>
-                    signIn('google', { callbackUrl: "/dashboard" })
+                  onClick={() =>{
+                    void signIn('google', { callbackUrl: "/dashboard" })
+                    }
                   }
                   className="flex w-full items-center justify-center gap-3 rounded-md bg-[#24292F] px-3 py-1.5 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#24292F]"
                 >
@@ -92,7 +93,7 @@ return (
                   </span>
                 </button>
                 <button
-                  onClick={() => signIn('twitter', { callbackUrl: "/dashboard" })}
+                  onClick={() => { void signIn('twitter', { callbackUrl: "/dashboard" }); }}
                   className="flex w-full items-center justify-center gap-3 rounded-md bg-[#1D9BF0] px-3 py-1.5 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1D9BF0]"
                 >
                   <svg
@@ -136,10 +137,5 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
   if (session) {
     return { redirect: { destination: "/" } };
   }
-
-  const providers = await getProviders();
-
-  return {
-    props: { providers: providers ?? [] },
-  };
+  return { props: {}};
 }

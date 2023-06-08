@@ -4,8 +4,8 @@ import {
   getServerSession,
   type NextAuthOptions,
   type DefaultSession,
-  type SendVerificationRequestContext,
 } from "next-auth";
+import type { SendVerificationRequestParams } from "next-auth/providers";
 import GoogleProvider from "next-auth/providers/google";
 import TwitterProvider from "next-auth/providers/twitter"
 import EmailProvider from "next-auth/providers/email";
@@ -68,8 +68,8 @@ export const authOptions: NextAuthOptions = {
         identifier: email,
         url,
         provider: { server, from },
-      }: SendVerificationRequestContext) {
-        verificationRequest({ email, url, server, from })
+      }: SendVerificationRequestParams) {
+        void verificationRequest({ email, url, server, from })
       },
       from: process.env.SMTP_FROM
     }),

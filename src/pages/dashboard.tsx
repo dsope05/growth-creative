@@ -2,22 +2,35 @@ import { useState } from "react";
 import Head from "next/head";
 import Image from "next/image";
 import styles from "../styles/Home.module.css";
+import dynamic from 'next/dynamic'
+import { getServerSession } from "next-auth/next"
+import type { GetServerSidePropsContext } from 'next';
+import { authOptions } from "~/server/auth";
 
-const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+interface PredictionTypes {
+  output: string;
+  status: string;
+  detail: string;
+  id: string;
+}
 
 export default function Home() {
-  const [prediction, setPrediction] = useState(null);
-  const [error, setError] = useState(null);
-  const [promptError, setPromptError] = useState(null);
+  const [prediction, setPrediction] = useState<PredictionTypes|null>(null);
+  const [error, setError] = useState<string|null>(null);
+  const [promptError, setPromptError] = useState<string|null>(null);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const prompt = e.target.prompt.value;
-    const splitPrompt = prompt.split(',')
+    const formElement = e.currentTarget;
+    const promptInput = formElement.querySelector<HTMLInputElement>('input[name="prompt"]');
+    const prompt = promptInput?.value;
+    const splitPrompt:Array<string> = prompt?.split(',') || [];
     if (splitPrompt.length > 2) {
      setPromptError("Maximum prompt size exceeded: 2");
      return;
-    } else if (splitPrompt[0].length === 0) {
+    } else if (splitPrompt[0]?.length === 0) {
      setPromptError("Enter a prompt to continue");
      return;
     } else {
@@ -32,7 +45,7 @@ export default function Home() {
         prompt: splitPrompt,
       }),
     });
-    let prediction = await response.json();
+    let prediction = await response.json() as PredictionTypes;
     if (response.status !== 201) {
       setError(prediction.detail);
       return;
@@ -45,7 +58,7 @@ export default function Home() {
     ) {
       await sleep(1000);
       const response = await fetch("/api/predictions/" + prediction.id);
-      prediction = await response.json();
+      prediction = await response.json() as PredictionTypes;
       if (response.status !== 200) {
         setError(prediction.detail);
         return;
@@ -68,7 +81,7 @@ export default function Home() {
         Dream something:
       </p>
 
-      <form className={styles.form} onSubmit={handleSubmit}>
+      <form className={styles.form} onSubmit={void handleSubmit}>
         <input autoComplete="off" type="text" name="prompt" placeholder="Enter text prompts (comma separated)" />
         <button type="submit">Go!</button>
       </form>
@@ -83,8 +96,7 @@ export default function Home() {
               <video
                 width="50%"
                 src={prediction.output}
-                alt="output"
-                autoplay
+                autoPlay
                 controls
                 loop
               />
@@ -95,4 +107,16 @@ export default function Home() {
       )}
     </div>
   );
+}
+
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+  const session = await getServerSession(context.req, context.res, authOptions);
+
+  // If the user is already logged in, redirect.
+  // Note: Make sure not to redirect to the same page
+  // To avoid an infinite loop!
+  if (!session) {
+    return { redirect: { destination: "/" } };
+  }
+  return { props: {}};
 }

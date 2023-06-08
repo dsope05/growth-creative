@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Dialog } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
-import { getProviders, useSession, signOut } from "next-auth/react"
+import { signOut } from "next-auth/react"
 import { useRouter } from 'next/router'
 import { getServerSession } from "next-auth/next"
 import type { InferGetServerSidePropsType, GetServerSidePropsContext } from 'next';
@@ -51,12 +51,12 @@ export default function Home({ sesh }:InferGetServerSidePropsType<typeof getServ
           </div>
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
             { sesh && (
-              <button onClick={() => signOut()} className="text-sm font-semibold leading-6 text-gray-300">
+              <button onClick={() => void signOut()} className="text-sm font-semibold leading-6 text-gray-300">
                 Log out
               </button>
             )
             }{ !sesh && (
-              <button onClick={() => router.push('/signin')} className="text-sm font-semibold leading-6 text-gray-300">
+              <button onClick={() => void router.push('/signin')} className="text-sm font-semibold leading-6 text-gray-300">
                 Log in <span aria-hidden="true">&rarr;</span>
               </button>
             )}

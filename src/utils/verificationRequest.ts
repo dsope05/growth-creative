@@ -1,13 +1,13 @@
 import { createTransport } from "nodemailer"
+import type { Options as SMTPTransportOptions } from "nodemailer/lib/smtp-transport"
 
-type VerificationRequestTypes = {
-  email: string,
-  url: string,
-  server: string,
-  from: string,
+type RequestParams = {
+  email: string;
+  url: string;
+  server: string | SMTPTransportOptions;
+  from: string | undefined;
 };
-
-const verificationRequest = async ({ email, url, server, from }:VerificationRequestTypes) => {
+const verificationRequest = async ({ email, url, server, from }: RequestParams) => {
   console.log('VERIFIACATION REQUEST')
   const { host } = new URL(url)
   // NOTE: You are not required to use `nodemailer`, use whatever you want.
@@ -28,8 +28,6 @@ const verificationRequest = async ({ email, url, server, from }:VerificationRequ
 
 function html(params: { url: string; host: string; }) {
   const { url, host } = params
-
-  const escapedHost = host.replace(/\./g, "&#8203;.")
 
   return `
   <!DOCTYPE html>
