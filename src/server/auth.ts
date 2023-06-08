@@ -63,12 +63,12 @@ export const authOptions: NextAuthOptions = {
           pass: process.env.SMTP_PASSWORD,
         },
       },
-      sendVerificationRequest({
+      async sendVerificationRequest({
         identifier: email,
         url,
         provider: { server, from },
       }: SendVerificationRequestParams) {
-        void verificationRequest({ email, url, server, from })
+          await verificationRequest({ email, url, server, from })
       },
       from: process.env.SMTP_FROM
     }),

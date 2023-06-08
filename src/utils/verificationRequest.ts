@@ -107,7 +107,7 @@ function html(params: { url: string; host: string; }) {
     <div class="card">
       <div class="header">
         <div class="img-wrapper">
-        <img src="https://growthcreative.ai/gc2.png" width="120" height="120" alt="Growth Creative Logo">
+        <img src="https://growthcreative.vercel.app/gc2.png" width="120" height="120" alt="Growth Creative Logo">
         <h2>Growth Creative</h2>
         </div>
       </div>
